@@ -34,13 +34,13 @@ class Weblate_rest_api:
         with open(f"export_csv_{formatted_now}.csv", mode="w", encoding="UTF-8", newline='') as f:
             f.writelines(f"Weblate Report date:, {now.strftime("%Y-%m-%d")}\n\n")
             if show_app_percent == True:
-                f.writelines("language,translated (%),Approved (%)\n")
+                f.writelines("language,translated (%),Approved words (%)\n")
             else:
                 f.writelines("language,translated (%)\n")
             for language in json_result:
                 if language["code"] in self.supported_language:
                     if show_app_percent == True:
-                        f.writelines(f"{language["name"]},{language["translated_percent"]},{language["approved_percent"]}\n")
+                        f.writelines(f"{language["name"]},{language["translated_percent"]},{language["approved_words_percent"]}\n")
                     else:
                         f.writelines(
                             f"{language["name"]},{language["translated_percent"]}\n")
