@@ -2,10 +2,11 @@ from wlc import Weblate
 from translation_stat import Translation_stat
 
 api_url = "https://hosted.weblate.org/api/"
-access_token = "wlu_HRoVEhdq3Gu28q3fWVPt9OxsvZWGrcIF4eoo"
+access_token = "wlu_Gakg1VFGNjjo9rzCctEWM8KAkTLCaKLusAiu"
 project_name = "IO"
 project_slug = 'io'
 app = "weblate/io"
+
 
 lang_stat = Translation_stat()
 
@@ -24,18 +25,19 @@ for component in components:
 
     # Build the component path
     component_path = f"{project_slug}/{component_slug}"
+    print(component_path)
 
     # List translations for the component
-    try:
-        translations = weblate.list_translations(f'components/{component_path}/translations/')
-        for translation in translations:
-            lang_stat.add_lang_stat(translation['language_code'], translation['translated_percent'])
-            print(f"  Language: {translation['language_code']}")
-            print(f"    Translated: {translation['translated_percent']:.2f}%")
-            print(f"    Fuzzy: {translation['fuzzy_percent']:.2f}%")
-            print(f"    Failing Checks: {translation['failing_checks']}")
-            print()
-    except Exception as e:
-        print(f"⚠️ Could not fetch translations for component {component_name}: {e}")
+    # try:
+    #     translations = weblate.list_translations(f'components/{component_path}/translations/')
+    #     for translation in translations:
+    #         lang_stat.add_lang_stat(translation['language_code'], translation['translated_percent'])
+    #         print(f"  Language: {translation['language_code']}")
+    #         print(f"    Translated: {translation['translated_percent']:.2f}%")
+    #         print(f"    Fuzzy: {translation['fuzzy_percent']:.2f}%")
+    #         print(f"    Failing Checks: {translation['failing_checks']}")
+    #         print()
+    # except Exception as e:
+    #     print(f"⚠️ Could not fetch translations for component {component_name}: {e}")
 
 print(lang_stat.lang_stat)
