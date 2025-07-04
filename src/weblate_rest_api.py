@@ -8,6 +8,8 @@ class Weblate_rest_api:
         self.url = url = "https://hosted.weblate.org/api/projects/"
         self.header = headers = {
                             "Authorization": "Token wlu_Gakg1VFGNjjo9rzCctEWM8KAkTLCaKLusAiu"}
+        self.supported_language = ['en', 'bg', 'fr', 'da', 'de', 'el', 'hu', 'it', 'nb_NO', 'pt',
+                                   'es', 'sv', 'ja', 'ko', 'tr', 'pl', 'ru']
         # self.response = None
 
     def get_language_translation(self):
@@ -24,23 +26,40 @@ class Weblate_rest_api:
 
     def show_translation_stats(self, json_result):
         for language in json_result:
-            print(f"language: {language["name"]} translated: {language["translated_percent"]}")
+            print(f"language: {language["name"]} ({language["code"]}) translated: {language["translated_percent"]}")
 
-    def export_csv(self, json_result):
+    def export_csv(self, json_result, show_app_percent=False):
         now = datetime.now()
         formatted_now = now.strftime("%Y-%m-%d_%H%M%S")
-        with open(f"export_{formatted_now}.csv", mode="w", encoding="UTF-8", newline='') as f:
+        with open(f"export_csv_{formatted_now}.csv", mode="w", encoding="UTF-8", newline='') as f:
             f.writelines(f"Weblate Report date:, {now.strftime("%Y-%m-%d")}\n\n")
-            f.writelines("language,translated\n")
+            if show_app_percent == True:
+                f.writelines("language,translated (%),Approved (%)\n")
+            else:
+                f.writelines("language,translated (%)\n")
             for language in json_result:
-                f.writelines(f"{language["name"]},{language["translated_percent"]}\n")
+                if language["code"] in self.supported_language:
+                    if show_app_percent == True:
+                        f.writelines(f"{language["name"]},{language["translated_percent"]},{language["approved_percent"]}\n")
+                    else:
+                        f.writelines(
+                            f"{language["name"]},{language["translated_percent"]}\n")
 
+    def pretty_text_report(self, json_result):
+        now = datetime.now()
+        formatted_now = now.strftime("%Y-%m-%d_%H%M%S")
+        with open(f"export_txt_{formatted_now}.txt", mode="w", encoding="UTF-8", newline='') as f:
+            f.writelines(f"Weblate Report date: {now.strftime("%Y-%m-%d")}\n\n")
+            for language in json_result:
+                if language["code"] in self.supported_language:
+                    f.writelines(f"{language["name"]} ({language["code"]}) - Translation score(%): {language["translated_percent"]}\n")
 
 if __name__ == "__main__":
     api = Weblate_rest_api()
     response = api.get_language_translation()
     response = api.json_response(response)
     api.show_translation_stats(response)
-    api.export_csv(response)
+    api.export_csv(response, True)
+    api.pretty_text_report(response)
 
 
