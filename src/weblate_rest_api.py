@@ -1,5 +1,7 @@
 import requests
 from datetime import datetime
+import yaml
+from language_code import language_code
 
 class Weblate_rest_api:
 
@@ -8,8 +10,9 @@ class Weblate_rest_api:
         self.url = url = "https://hosted.weblate.org/api/projects/"
         self.header = headers = {
                             "Authorization": "Token wlu_Gakg1VFGNjjo9rzCctEWM8KAkTLCaKLusAiu"}
-        self.supported_language = ['en', 'bg', 'fr', 'da', 'de', 'el', 'hu', 'it', 'nb_NO', 'pt',
-                                   'es', 'sv', 'ja', 'ko', 'tr', 'pl', 'ru']
+        # self.supported_language = ['en', 'bg', 'fr', 'da', 'de', 'el', 'hu', 'it', 'nb_NO', 'pt',
+        #                            'es', 'sv', 'ja', 'ko', 'tr', 'pl', 'ru']
+        self.supported_language = self.language_selector()
         # self.response = None
 
     def get_language_translation(self):
@@ -53,6 +56,21 @@ class Weblate_rest_api:
             for language in json_result:
                 if language["code"] in self.supported_language:
                     f.writelines(f"{language["name"]} ({language["code"]}) - Translation score(%): {language["translated_percent"]}\n")
+
+
+    def language_selector(self):
+        with open(r"C:\Users\u120230\github\weblate_report\supp_lang.yaml", mode='r') as f:
+            lang_selector = yaml.safe_load(f)
+            # print(lang_selector)
+
+        support_lang = []
+        for lang, switch in lang_selector["support language"].items():
+            # print(f"L: {lang}  --  {switch}")
+            if switch:
+                support_lang.append(language_code[lang])
+
+        return support_lang
+
 
 if __name__ == "__main__":
     api = Weblate_rest_api()
